@@ -106,8 +106,8 @@
     /* Language selector dropdown style */
 #languageSelect {
   position: absolute; /* Will scroll with the page */
-  top: 20px; /* Distance from the top of the page */
-  right: 20px; /* Distance from the right side */
+  top: 49px; /* Distance from the top of the page */
+  right: 270px; /* Distance from the right side */
   padding: 8px;
   font-size: 16px;
   cursor: pointer;
@@ -117,10 +117,10 @@
   width: 150px; /* Adjust width for a clean appearance */
 }
 
-
   </style>
 </head>
 <body>
+
   <!-- Language Selector Dropdown in the top-right corner -->
   <select id="languageSelect"  class="container">
     <option value="en">English</option>
@@ -178,7 +178,7 @@
         logoutBtn: "Logout",
       },
       ta: {
-        pageTitle: "வேலை வாய்ப்பு போர்டல்",
+        pageTitle: "வேலை வாய்ப்பு தளம்",
         searchTitle: "வேலை வாய்ப்புகளை தேடு",
         uploadJobTitle: "புதிய வேலை வாய்ப்பை பதிவேற்று",
         availableJobsTitle: "வெளியிட்ட வேலை வாய்ப்புகள்",
@@ -232,6 +232,7 @@
     // Initial translation (English)
     translatePage(currentLang);
 
+
     // Fetch all jobs from the API
     const fetchJobs = async () => {
       try {
@@ -261,12 +262,78 @@
       }
     };
 
-    // Other functionalities like job search, form submission, logout, etc.
-    // You can keep the existing event listeners and other code as it is.
+    // Handle job search
+    document.getElementById('searchForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const keyword = document.getElementById('searchKeyword').value.trim();
+      const minSalary = document.getElementById('minSalary').value;
+      const location = document.getElementById('locationFilter').value.trim();
+      const company = document.getElementById('companyFilter').value.trim();
+
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/jobs/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword, minSalary, location, company }),
+        });
+        const filteredJobs = await response.json();
+        displayJobs(filteredJobs);
+      } catch (error) {
+        console.error('Error searching jobs:', error);
+      }
+    });
+
+    // Clear Filters button functionality
+    document.getElementById('clearFilters').addEventListener('click', () => {
+      document.getElementById('searchKeyword').value = '';
+      document.getElementById('minSalary').value = '';
+      document.getElementById('locationFilter').value = '';
+      document.getElementById('companyFilter').value = '';
+    });
+
+    // Handle form submission to create a new job
+    document.getElementById('jobForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const title = document.getElementById('title').value;
+      const company = document.getElementById('company').value;
+      const location = document.getElementById('location').value;
+      const description = document.getElementById('description').value;
+      const salary = document.getElementById('salary').value;
+
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, company, location, description, salary }),
+        });
+
+        if (response.ok) {
+          fetchJobs(); // Refresh the job list
+          document.getElementById('jobForm').reset(); // Clear the form
+        } else {
+          console.error('Error uploading job:', await response.text());
+        }
+      } catch (error) {
+        console.error('Error uploading job:', error);
+      }
+    });
+
+    // Logout function
+    const logout = () => {
+      localStorage.removeItem('token'); // Remove the token
+      window.location.href = 'login.html'; // Redirect to login
+    };
+
+    // Navigate to job details page
+    const viewJobDetails = (jobId) => {
+      window.open(`jobDetails.html?id=${jobId}`, '_blank');
+    };
 
     // Load jobs on page load
     fetchJobs();
 
+    // Initial translation (English)
+    translatePage('en');
   </script>
 </body>
 </html>
