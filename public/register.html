@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      font-size: 14px;
+      color: #333;
+      margin: 10px 0;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .login-btn {
+      background-color: #28a745;
+    }
+    .login-btn:hover {
+      background-color: #218838;
+    }
+    .links {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .links a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>User Registration</h1>
+    <form id="register-form">
+      <label for="name">Name:</label>
+      <input type="text" id="name" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" required>
+
+      <button type="submit">Register</button>
+    </form>
+
+    <div class="links">
+      <p>Already have an account?</p>
+      <button class="login-btn" onclick="window.location.href='login.html'">Login</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 201) {
+          alert('User registered successfully!');
+          window.location.href = '/public/login.html';  // Redirect to login page after successful registration
+        } else {
+          // Handle error responses from the server
+          if (data.errors && data.errors.length > 0) {
+            alert('Error: ' + data.errors.map(error => error.msg).join(', '));  // Show all error messages
+          } else if (data.error) {
+            alert('Error: ' + data.error);  // Handle generic errors
+          } else {
+            alert('Error: Unknown error');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error: Unable to connect to the server');
+      }
+    });
+  </script>
+</body>
+</html>
