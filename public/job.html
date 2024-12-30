@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 20px;
+      padding-right: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      color: #1cacff;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    form {
+      margin-bottom: 30px;
+    }
+    input, textarea, button, select {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: border-color 0.3s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+    .job-list {
+      margin-top: 20px;
+    }
+    .job {
+      padding: 15px;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .job h3 {
+      margin: 0;
+      color: #007bff;
+      cursor: pointer;
+    }
+    .logout-btn {
+      margin-top: 20px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      padding-left: 20px;
+    }
+    .form-buttons button {
+      flex: 1;
+    }
+
+    /* Language selector dropdown style */
+#languageSelect {
+  position: absolute; /* Will scroll with the page */
+  top: 20px; /* Distance from the top of the page */
+  right: 20px; /* Distance from the right side */
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 150px; /* Adjust width for a clean appearance */
+}
+
+
+  </style>
+</head>
+<body>
+  <!-- Language Selector Dropdown in the top-right corner -->
+  <select id="languageSelect"  class="container">
+    <option value="en">English</option>
+    <option value="ta">தமிழ் (Tamil)</option>
+    <option value="si">සිංහල (Sinhala)</option>
+  </select>
+
+  <div class="container">
+    <h1 id="pageTitle">Job Portal</h1>
+
+    <!-- Search Jobs -->
+    <h2 id="searchTitle">Search Jobs</h2>
+    <form id="searchForm">
+      <div class="filter-grid">
+        <input type="text" id="searchKeyword" placeholder="Job Title or Skills">
+        <input type="number" id="minSalary" placeholder="Salary">
+        <input type="text" id="locationFilter" placeholder="Location">
+        <input type="text" id="companyFilter" placeholder="Company">
+      </div>
+      <div class="form-buttons">
+        <button type="submit" id="searchBtn">Search</button>
+        <button type="button" id="clearFilters" style="background-color: #6c757d;">Clear Filters</button>
+      </div>
+    </form>
+
+    <!-- Upload Job -->
+    <h2 id="uploadJobTitle">Upload New Job</h2>
+    <form id="jobForm">
+      <input type="text" id="title" placeholder="Job Title" required>
+      <input type="text" id="company" placeholder="Company Name" required>
+      <input type="text" id="location" placeholder="Location" required>
+      <textarea id="description" placeholder="Job Description" rows="4" required></textarea>
+      <input type="number" id="salary" placeholder="Salary (Optional)">
+      <button type="submit" id="uploadBtn">Upload Job</button>
+    </form>
+
+    <!-- Job List -->
+    <h2 id="availableJobsTitle">Available Jobs</h2>
+    <div id="jobList" class="job-list"></div>
+
+    <!-- Logout button -->
+    <button class="logout-btn" onclick="logout()" id="logoutBtn">Logout</button>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        pageTitle: "Job Portal",
+        searchTitle: "Search Jobs",
+        uploadJobTitle: "Upload New Job",
+        availableJobsTitle: "Available Jobs",
+        searchBtn: "Search",
+        clearFilters: "Clear Filters",
+        uploadBtn: "Upload Job",
+        logoutBtn: "Logout",
+      },
+      ta: {
+        pageTitle: "வேலை வாய்ப்பு போர்டல்",
+        searchTitle: "வேலை வாய்ப்புகளை தேடு",
+        uploadJobTitle: "புதிய வேலை வாய்ப்பை பதிவேற்று",
+        availableJobsTitle: "வெளியிட்ட வேலை வாய்ப்புகள்",
+        searchBtn: "தேடு",
+        clearFilters: "பாதுகாப்புகளை தூக்கு",
+        uploadBtn: "வேலை பதிவேற்றவும்",
+        logoutBtn: "வெளியேறு",
+      },
+      si: {
+        pageTitle: " රැකියා ද්වාරය",
+        searchTitle: " රැකියා හොයන්න",
+        uploadJobTitle: " නව රැකියා එකතු කරන්න",
+        availableJobsTitle: "ලාභදායී රැකියා",
+        searchBtn: "සොයන්න",
+        clearFilters: "සැකසුම් මකාදමන්න",
+        uploadBtn: "රැකියා එකතු කරන්න",
+        logoutBtn: "නික්ම වන්න",
+      }
+    };
+
+    let currentLang = 'en'; // Default to English
+
+    // Function to change language
+    const translatePage = (lang) => {
+      currentLang = lang;
+      document.getElementById("pageTitle").textContent = translations[lang].pageTitle;
+      document.getElementById("searchTitle").textContent = translations[lang].searchTitle;
+      document.getElementById("uploadJobTitle").textContent = translations[lang].uploadJobTitle;
+      document.getElementById("availableJobsTitle").textContent = translations[lang].availableJobsTitle;
+      document.getElementById("searchBtn").textContent = translations[lang].searchBtn;
+      document.getElementById("clearFilters").textContent = translations[lang].clearFilters;
+      document.getElementById("uploadBtn").textContent = translations[lang].uploadBtn;
+      document.getElementById("logoutBtn").textContent = translations[lang].logoutBtn;
+      document.getElementById("languageSelect").value = lang; // Update dropdown to reflect current language
+
+      // Adjust text for Tamil, Sinhala, or English
+      if (lang === 'ta') {
+        document.body.style.fontFamily = "Latha, sans-serif";
+      } else if (lang === 'si') {
+        document.body.style.fontFamily = "Iskoola Pota, sans-serif";
+      } else {
+        document.body.style.fontFamily = "Arial, sans-serif";
+      }
+    };
+
+    // Toggle language when dropdown is changed
+    document.getElementById("languageSelect").addEventListener("change", (event) => {
+      translatePage(event.target.value);
+    });
+
+    // Initial translation (English)
+    translatePage(currentLang);
+
+    // Fetch all jobs from the API
+    const fetchJobs = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:3000/api/jobs');
+        const jobs = await response.json();
+        displayJobs(jobs);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+      }
+    };
+
+    // Display jobs in the UI
+    const displayJobs = (jobs) => {
+      const jobList = document.getElementById('jobList');
+      jobList.innerHTML = ''; // Clear previous jobs
+      if (Array.isArray(jobs) && jobs.length > 0) {
+        jobs.forEach(job => {
+          const jobDiv = document.createElement('div');
+          jobDiv.className = 'job';
+          jobDiv.innerHTML = `
+            <h3 onclick="viewJobDetails('${job._id}')">${job.title}</h3>
+          `;
+          jobList.appendChild(jobDiv);
+        });
+      } else {
+        jobList.innerHTML = '<p>No jobs available.</p>';
+      }
+    };
+
+    // Other functionalities like job search, form submission, logout, etc.
+    // You can keep the existing event listeners and other code as it is.
+
+    // Load jobs on page load
+    fetchJobs();
+
+  </script>
+</body>
+</html>
