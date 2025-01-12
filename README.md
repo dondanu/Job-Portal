@@ -40,7 +40,7 @@ Follow these steps to set up the project locally:
 
 1. Clone the repository:  
    ```bash  
-   git clone https://github.com/your-repo-link
+   git clone https://github.com/dondanu/Job-Portal
    
 2. Navigate to the project folder:
    ```bash
